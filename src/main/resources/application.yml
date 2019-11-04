@@ -51,7 +51,7 @@ mybatis:
   mapper-locations: classpath:mapper/*Mapper.xml
   configuration:
     # 这个配置会将执行的sql打印出来，在开发或测试的时候可以用
-      log-impl: org.apache.ibatis.logging.stdout.StdOutImpl
+    log-impl: org.apache.ibatis.logging.stdout.StdOutImpl
 
 # pageHelper 配置,
 pagehelper:
@@ -75,6 +75,3 @@ pagehelper:
   # 用于控制默认不带 count 查询的方法中，是否执行 count 查询，这里设置为true后，total会为-1
   default-count: false
   #dialect-alias: ⑥
-
-
-

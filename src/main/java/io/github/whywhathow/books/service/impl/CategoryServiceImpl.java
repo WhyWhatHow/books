@@ -1,13 +1,13 @@
 package io.github.whywhathow.books.service.impl;
 
+import io.github.whywhathow.books.mapper.CategoryMapper;
+import io.github.whywhathow.books.pojo.Category;
 import io.github.whywhathow.books.service.CategoryService;
+import io.github.whywhathow.books.utils.Result;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
-import io.github.whywhathow.books.mapper.CategoryMapper;
-import io.github.whywhathow.books.pojo.Category;
-import io.github.whywhathow.books.utils.Result;
 
 import java.io.Serializable;
 import java.util.ArrayList;
@@ -25,7 +25,7 @@ public class CategoryServiceImpl implements CategoryService {
 //    @Cacheable(value = "category")// 启用缓存
     public Result getAll() {
         // 如果缓存服务器中存在category对象
-        Result result = (Result) redisTemplate.opsForValue().get("category");
+        Result result = (Result) redisTemplate.opsForValue().get("bookcategory");
         if (result != null && result.isSuccess() && result.getData() != null && !StringUtils.isEmpty(result)) {
             System.err.println("这并不是第一次查询.....,数据存在redis 中");
             result.setMessage(result.getMessage() + " redis.........................");
@@ -57,7 +57,7 @@ public class CategoryServiceImpl implements CategoryService {
         result.setSuccess(true);
         result.setMessage("Success in selectAll category ");
         result.setCode(202);
-        redisTemplate.opsForValue().set("category", result);
+        redisTemplate.opsForValue().set("bookcategory", result);
         return result;
     }
 
@@ -79,7 +79,7 @@ public class CategoryServiceImpl implements CategoryService {
         result.setMessage("Success insert category ");
         result.setSuccess(true);
         // try catch 处理下 ...
-        redisTemplate.opsForValue().set("category", null);
+        redisTemplate.opsForValue().set("bookcategory", null);
 
         return result;
 
@@ -98,7 +98,7 @@ public class CategoryServiceImpl implements CategoryService {
             result.setMessage("Server's problem,  --");
             return result;
         }
-        redisTemplate.opsForValue().set("category", null);
+        redisTemplate.opsForValue().set("bookcategory", null);
         result.setSuccess(true);
         result.setCode(202);
         result.setMessage("Success in update category! ");
@@ -122,6 +122,7 @@ public class CategoryServiceImpl implements CategoryService {
             result.setMessage("Server's problem,  -- delete category ");
             return result;
         }
+        redisTemplate.opsForValue().set("bookcategory", null);//  重置数据
         result.setSuccess(true);
         result.setCode(202);
         result.setData(res);

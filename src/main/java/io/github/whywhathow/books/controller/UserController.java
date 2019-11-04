@@ -26,7 +26,7 @@ public class UserController {
     RedisTemplate redisTemplate;
 
     @GetMapping("/hello")
-    public Result hello(@RequestBody User user, HttpServletRequest request, HttpServletResponse response) {
+    public Result hello() {
         Result result = new Result();
         result.setMessage("hello");
 //        result.setSuccess(false);

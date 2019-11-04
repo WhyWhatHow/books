@@ -3,7 +3,17 @@ package io.github.whywhathow.books.pojo;
 import java.util.Date;
 
 public class User {
+    private Integer owe;
+
     private String uid;
+
+    public Integer getOwe() {
+        return owe;
+    }
+
+    public void setOwe(Integer owe) {
+        this.owe = owe;
+    }
 
     private String username;
 
@@ -21,7 +31,7 @@ public class User {
 
     private String telphone;
 
-    private Short state;
+    private Integer state;
 
     private String code;
 
@@ -105,11 +115,11 @@ public class User {
         this.telphone = telphone == null ? null : telphone.trim();
     }
 
-    public Short getState() {
+    public Integer getState() {
         return state;
     }
 
-    public void setState(Short state) {
+    public void setState(Integer state) {
         this.state = state;
     }
 

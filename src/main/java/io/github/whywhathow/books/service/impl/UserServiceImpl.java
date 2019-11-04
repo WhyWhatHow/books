@@ -38,7 +38,7 @@ public class UserServiceImpl implements UserService {
         int res = 0;
         // 添加用户
         user.setCreateTime(new Date());
-        user.setState((short) 0);
+        user.setState(0);
         user.setRid(2);//  默认角色
 
         // TODO  密码加密
@@ -60,6 +60,7 @@ public class UserServiceImpl implements UserService {
             res = mapper.insertSelective(user);
         } catch (Exception e) {
             result.setCode(500);
+            e.printStackTrace();
             result.setMessage("Server Problem!! -- register user ");
             return result;
         }
@@ -126,6 +127,7 @@ public class UserServiceImpl implements UserService {
 //            user.setUpdateTime(LocalDateTime.now());
             mapper.updateByPrimaryKeySelective(user);
         } catch (Exception e) {
+            e.printStackTrace();
             result.setCode(500);
             result.setMessage("Server Problem,--update user");
             return result;

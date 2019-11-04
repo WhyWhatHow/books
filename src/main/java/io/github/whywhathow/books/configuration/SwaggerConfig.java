@@ -25,7 +25,7 @@ public class SwaggerConfig {
     }
 
     private ApiInfo apiInfo() {
-        Contact contact = new Contact("whywhathow-group", "www.whywhathow.github.io", "nash.whywhathow@gmail.com");
+        Contact contact = new Contact("whywhathow-group", "Https://whywhathow.github.io", "nash.whywhathow@gmail.com");
         return new ApiInfoBuilder()
                 .title("Books Management System")
 //                .description("")

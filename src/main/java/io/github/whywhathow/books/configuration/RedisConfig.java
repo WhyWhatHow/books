@@ -15,8 +15,6 @@ public class RedisConfig extends CachingConfigurerSupport {
     @Bean
     public KeyGenerator keyGenerator() {
         return new KeyGenerator() {
-
-
             @Override
             public Object generate(Object target, Method method, Object... params) {
                 StringBuilder sb = new StringBuilder();

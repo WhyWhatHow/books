@@ -35,7 +35,7 @@ public interface CategoryMapper {
 
     int updateByPrimaryKey(Category record);
 
-    @Select("select * from category ")
+    @Select("select * from category  where is_deleted = false ")
     List<Category> selectAll();
 
     @Update("update  category set is_deleted = true where cid =#{cid}")
