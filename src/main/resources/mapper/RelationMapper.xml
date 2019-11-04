@@ -1,0 +1,216 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="io.github.whywhathow.books.mapper.RelationMapper">
+    <resultMap id="BaseResultMap" type="io.github.whywhathow.books.pojo.Relation">
+        <id column="uid" property="uid" jdbcType="VARCHAR"/>
+        <id column="bid" property="bid" jdbcType="INTEGER"/>
+        <result column="borrow_time" property="borrowTime" jdbcType="TIMESTAMP"/>
+        <result column="real_return" property="realReturn" jdbcType="TIMESTAMP"/>
+        <result column="need_return" property="needReturn" jdbcType="TIMESTAMP"/>
+    </resultMap>
+    <sql id="Example_Where_Clause">
+        <where>
+            <foreach collection="oredCriteria" item="criteria" separator="or">
+                <if test="criteria.valid">
+                    <trim prefix="(" suffix=")" prefixOverrides="and">
+                        <foreach collection="criteria.criteria" item="criterion">
+                            <choose>
+                                <when test="criterion.noValue">
+                                    and ${criterion.condition}
+                                </when>
+                                <when test="criterion.singleValue">
+                                    and ${criterion.condition} #{criterion.value}
+                                </when>
+                                <when test="criterion.betweenValue">
+                                    and ${criterion.condition} #{criterion.value} and #{criterion.secondValue}
+                                </when>
+                                <when test="criterion.listValue">
+                                    and ${criterion.condition}
+                                    <foreach collection="criterion.value" item="listItem" open="(" close=")"
+                                             separator=",">
+                                        #{listItem}
+                                    </foreach>
+                                </when>
+                            </choose>
+                        </foreach>
+                    </trim>
+                </if>
+            </foreach>
+        </where>
+    </sql>
+    <sql id="Update_By_Example_Where_Clause">
+        <where>
+            <foreach collection="example.oredCriteria" item="criteria" separator="or">
+                <if test="criteria.valid">
+                    <trim prefix="(" suffix=")" prefixOverrides="and">
+                        <foreach collection="criteria.criteria" item="criterion">
+                            <choose>
+                                <when test="criterion.noValue">
+                                    and ${criterion.condition}
+                                </when>
+                                <when test="criterion.singleValue">
+                                    and ${criterion.condition} #{criterion.value}
+                                </when>
+                                <when test="criterion.betweenValue">
+                                    and ${criterion.condition} #{criterion.value} and #{criterion.secondValue}
+                                </when>
+                                <when test="criterion.listValue">
+                                    and ${criterion.condition}
+                                    <foreach collection="criterion.value" item="listItem" open="(" close=")"
+                                             separator=",">
+                                        #{listItem}
+                                    </foreach>
+                                </when>
+                            </choose>
+                        </foreach>
+                    </trim>
+                </if>
+            </foreach>
+        </where>
+    </sql>
+    <sql id="Base_Column_List">
+    uid, bid, borrow_time, real_return, need_return
+  </sql>
+    <select id="selectByExample" resultMap="BaseResultMap"
+            parameterType="io.github.whywhathow.books.pojo.RelationExample">
+        select
+        <if test="distinct">
+            distinct
+        </if>
+        <include refid="Base_Column_List"/>
+        from relation
+        <if test="_parameter != null">
+            <include refid="Example_Where_Clause"/>
+        </if>
+        <if test="orderByClause != null">
+            order by ${orderByClause}
+        </if>
+    </select>
+    <select id="selectByPrimaryKey" resultMap="BaseResultMap"
+            parameterType="io.github.whywhathow.books.pojo.RelationKey">
+        select
+        <include refid="Base_Column_List"/>
+        from relation
+        where uid = #{uid,jdbcType=VARCHAR}
+        and bid = #{bid,jdbcType=INTEGER}
+    </select>
+    <delete id="deleteByPrimaryKey" parameterType="io.github.whywhathow.books.pojo.RelationKey">
+    delete from relation
+    where uid = #{uid,jdbcType=VARCHAR}
+      and bid = #{bid,jdbcType=INTEGER}
+  </delete>
+    <delete id="deleteByExample" parameterType="io.github.whywhathow.books.pojo.RelationExample">
+        delete from relation
+        <if test="_parameter != null">
+            <include refid="Example_Where_Clause"/>
+        </if>
+    </delete>
+    <insert id="insert" parameterType="io.github.whywhathow.books.pojo.Relation">
+    insert into relation (uid, bid, borrow_time, 
+      real_return, need_return)
+    values (#{uid,jdbcType=VARCHAR}, #{bid,jdbcType=INTEGER}, #{borrowTime,jdbcType=TIMESTAMP}, 
+      #{realReturn,jdbcType=TIMESTAMP}, #{needReturn,jdbcType=TIMESTAMP})
+  </insert>
+    <insert id="insertSelective" parameterType="io.github.whywhathow.books.pojo.Relation">
+        insert into relation
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="uid != null">
+                uid,
+            </if>
+            <if test="bid != null">
+                bid,
+            </if>
+            <if test="borrowTime != null">
+                borrow_time,
+            </if>
+            <if test="realReturn != null">
+                real_return,
+            </if>
+            <if test="needReturn != null">
+                need_return,
+            </if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="uid != null">
+                #{uid,jdbcType=VARCHAR},
+            </if>
+            <if test="bid != null">
+                #{bid,jdbcType=INTEGER},
+            </if>
+            <if test="borrowTime != null">
+                #{borrowTime,jdbcType=TIMESTAMP},
+            </if>
+            <if test="realReturn != null">
+                #{realReturn,jdbcType=TIMESTAMP},
+            </if>
+            <if test="needReturn != null">
+                #{needReturn,jdbcType=TIMESTAMP},
+            </if>
+        </trim>
+    </insert>
+    <select id="countByExample" parameterType="io.github.whywhathow.books.pojo.RelationExample"
+            resultType="java.lang.Integer">
+        select count(*) from relation
+        <if test="_parameter != null">
+            <include refid="Example_Where_Clause"/>
+        </if>
+    </select>
+    <update id="updateByExampleSelective" parameterType="map">
+        update relation
+        <set>
+            <if test="record.uid != null">
+                uid = #{record.uid,jdbcType=VARCHAR},
+            </if>
+            <if test="record.bid != null">
+                bid = #{record.bid,jdbcType=INTEGER},
+            </if>
+            <if test="record.borrowTime != null">
+                borrow_time = #{record.borrowTime,jdbcType=TIMESTAMP},
+            </if>
+            <if test="record.realReturn != null">
+                real_return = #{record.realReturn,jdbcType=TIMESTAMP},
+            </if>
+            <if test="record.needReturn != null">
+                need_return = #{record.needReturn,jdbcType=TIMESTAMP},
+            </if>
+        </set>
+        <if test="_parameter != null">
+            <include refid="Update_By_Example_Where_Clause"/>
+        </if>
+    </update>
+    <update id="updateByExample" parameterType="map">
+        update relation
+        set uid = #{record.uid,jdbcType=VARCHAR},
+        bid = #{record.bid,jdbcType=INTEGER},
+        borrow_time = #{record.borrowTime,jdbcType=TIMESTAMP},
+        real_return = #{record.realReturn,jdbcType=TIMESTAMP},
+        need_return = #{record.needReturn,jdbcType=TIMESTAMP}
+        <if test="_parameter != null">
+            <include refid="Update_By_Example_Where_Clause"/>
+        </if>
+    </update>
+    <update id="updateByPrimaryKeySelective" parameterType="io.github.whywhathow.books.pojo.Relation">
+        update relation
+        <set>
+            <if test="borrowTime != null">
+                borrow_time = #{borrowTime,jdbcType=TIMESTAMP},
+            </if>
+            <if test="realReturn != null">
+                real_return = #{realReturn,jdbcType=TIMESTAMP},
+            </if>
+            <if test="needReturn != null">
+                need_return = #{needReturn,jdbcType=TIMESTAMP},
+            </if>
+        </set>
+        where uid = #{uid,jdbcType=VARCHAR}
+        and bid = #{bid,jdbcType=INTEGER}
+    </update>
+    <update id="updateByPrimaryKey" parameterType="io.github.whywhathow.books.pojo.Relation">
+    update relation
+    set borrow_time = #{borrowTime,jdbcType=TIMESTAMP},
+      real_return = #{realReturn,jdbcType=TIMESTAMP},
+      need_return = #{needReturn,jdbcType=TIMESTAMP}
+    where uid = #{uid,jdbcType=VARCHAR}
+      and bid = #{bid,jdbcType=INTEGER}
+  </update>
+</mapper>

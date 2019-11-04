@@ -1,0 +1,341 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="io.github.whywhathow.books.mapper.BookMapper">
+    <resultMap id="BaseResultMap" type="io.github.whywhathow.books.pojo.Book">
+        <id column="bid" property="bid" jdbcType="INTEGER"/>
+        <id column="total" property="total" jdbcType="INTEGER"/>
+        <id column="current" property="current" jdbcType="INTEGER"/>
+        <result column="bname" property="bname" jdbcType="VARCHAR"/>
+        <result column="author" property="author" jdbcType="VARCHAR"/>
+        <result column="publish" property="publish" jdbcType="VARCHAR"/>
+        <result column="isbn" property="isbn" jdbcType="VARCHAR"/>
+        <result column="price" property="price" jdbcType="DECIMAL"/>
+        <result column="info" property="info" jdbcType="VARCHAR"/>
+        <result column="cid" property="cid" jdbcType="INTEGER"/>
+        <result column="view" property="view" jdbcType="INTEGER"/>
+        <result column="borrow" property="borrow" jdbcType="INTEGER"/>
+        <result column="is_deleted" property="isDeleted" jdbcType="BIT"/>
+    </resultMap>
+    <sql id="Example_Where_Clause">
+        <where>
+            <foreach collection="oredCriteria" item="criteria" separator="or">
+                <if test="criteria.valid">
+                    <trim prefix="(" suffix=")" prefixOverrides="and">
+                        <foreach collection="criteria.criteria" item="criterion">
+                            <choose>
+                                <when test="criterion.noValue">
+                                    and ${criterion.condition}
+                                </when>
+                                <when test="criterion.singleValue">
+                                    and ${criterion.condition} #{criterion.value}
+                                </when>
+                                <when test="criterion.betweenValue">
+                                    and ${criterion.condition} #{criterion.value} and #{criterion.secondValue}
+                                </when>
+                                <when test="criterion.listValue">
+                                    and ${criterion.condition}
+                                    <foreach collection="criterion.value" item="listItem" open="(" close=")"
+                                             separator=",">
+                                        #{listItem}
+                                    </foreach>
+                                </when>
+                            </choose>
+                        </foreach>
+                    </trim>
+                </if>
+            </foreach>
+        </where>
+    </sql>
+    <sql id="Update_By_Example_Where_Clause">
+        <where>
+            <foreach collection="example.oredCriteria" item="criteria" separator="or">
+                <if test="criteria.valid">
+                    <trim prefix="(" suffix=")" prefixOverrides="and">
+                        <foreach collection="criteria.criteria" item="criterion">
+                            <choose>
+                                <when test="criterion.noValue">
+                                    and ${criterion.condition}
+                                </when>
+                                <when test="criterion.singleValue">
+                                    and ${criterion.condition} #{criterion.value}
+                                </when>
+                                <when test="criterion.betweenValue">
+                                    and ${criterion.condition} #{criterion.value} and #{criterion.secondValue}
+                                </when>
+                                <when test="criterion.listValue">
+                                    and ${criterion.condition}
+                                    <foreach collection="criterion.value" item="listItem" open="(" close=")"
+                                             separator=",">
+                                        #{listItem}
+                                    </foreach>
+                                </when>
+                            </choose>
+                        </foreach>
+                    </trim>
+                </if>
+            </foreach>
+        </where>
+    </sql>
+    <sql id="Base_Column_List">
+    bid, total, current, bname, author, publish, isbn, price, info, cid, view, borrow, 
+    is_deleted
+  </sql>
+    <select id="selectByExample" resultMap="BaseResultMap" parameterType="io.github.whywhathow.books.pojo.BookExample">
+        select
+        <if test="distinct">
+            distinct
+        </if>
+        <include refid="Base_Column_List"/>
+        from book
+        <if test="_parameter != null">
+            <include refid="Example_Where_Clause"/>
+        </if>
+        <if test="orderByClause != null">
+            order by ${orderByClause}
+        </if>
+    </select>
+    <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="io.github.whywhathow.books.pojo.BookKey">
+        select
+        <include refid="Base_Column_List"/>
+        from book
+        where bid = #{bid,jdbcType=INTEGER}
+        and total = #{total,jdbcType=INTEGER}
+        and current = #{current,jdbcType=INTEGER}
+    </select>
+    <delete id="deleteByPrimaryKey" parameterType="io.github.whywhathow.books.pojo.BookKey">
+    delete from book
+    where bid = #{bid,jdbcType=INTEGER}
+      and total = #{total,jdbcType=INTEGER}
+      and current = #{current,jdbcType=INTEGER}
+  </delete>
+    <delete id="deleteByExample" parameterType="io.github.whywhathow.books.pojo.BookExample">
+        delete from book
+        <if test="_parameter != null">
+            <include refid="Example_Where_Clause"/>
+        </if>
+    </delete>
+    <insert id="insert" parameterType="io.github.whywhathow.books.pojo.Book">
+    insert into book (bid, total, current, 
+      bname, author, publish, 
+      isbn, price, info, 
+      cid, view, borrow, 
+      is_deleted)
+    values (#{bid,jdbcType=INTEGER}, #{total,jdbcType=INTEGER}, #{current,jdbcType=INTEGER}, 
+      #{bname,jdbcType=VARCHAR}, #{author,jdbcType=VARCHAR}, #{publish,jdbcType=VARCHAR}, 
+      #{isbn,jdbcType=VARCHAR}, #{price,jdbcType=DECIMAL}, #{info,jdbcType=VARCHAR}, 
+      #{cid,jdbcType=INTEGER}, #{view,jdbcType=INTEGER}, #{borrow,jdbcType=INTEGER}, 
+      #{isDeleted,jdbcType=BIT})
+  </insert>
+    <insert id="insertSelective" parameterType="io.github.whywhathow.books.pojo.Book">
+        insert into book
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="bid != null">
+                bid,
+            </if>
+            <if test="total != null">
+                total,
+            </if>
+            <if test="current != null">
+                current,
+            </if>
+            <if test="bname != null">
+                bname,
+            </if>
+            <if test="author != null">
+                author,
+            </if>
+            <if test="publish != null">
+                publish,
+            </if>
+            <if test="isbn != null">
+                isbn,
+            </if>
+            <if test="price != null">
+                price,
+            </if>
+            <if test="info != null">
+                info,
+            </if>
+            <if test="cid != null">
+                cid,
+            </if>
+            <if test="view != null">
+                view,
+            </if>
+            <if test="borrow != null">
+                borrow,
+            </if>
+            <if test="isDeleted != null">
+                is_deleted,
+            </if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="bid != null">
+                #{bid,jdbcType=INTEGER},
+            </if>
+            <if test="total != null">
+                #{total,jdbcType=INTEGER},
+            </if>
+            <if test="current != null">
+                #{current,jdbcType=INTEGER},
+            </if>
+            <if test="bname != null">
+                #{bname,jdbcType=VARCHAR},
+            </if>
+            <if test="author != null">
+                #{author,jdbcType=VARCHAR},
+            </if>
+            <if test="publish != null">
+                #{publish,jdbcType=VARCHAR},
+            </if>
+            <if test="isbn != null">
+                #{isbn,jdbcType=VARCHAR},
+            </if>
+            <if test="price != null">
+                #{price,jdbcType=DECIMAL},
+            </if>
+            <if test="info != null">
+                #{info,jdbcType=VARCHAR},
+            </if>
+            <if test="cid != null">
+                #{cid,jdbcType=INTEGER},
+            </if>
+            <if test="view != null">
+                #{view,jdbcType=INTEGER},
+            </if>
+            <if test="borrow != null">
+                #{borrow,jdbcType=INTEGER},
+            </if>
+            <if test="isDeleted != null">
+                #{isDeleted,jdbcType=BIT},
+            </if>
+        </trim>
+    </insert>
+    <select id="countByExample" parameterType="io.github.whywhathow.books.pojo.BookExample"
+            resultType="java.lang.Integer">
+        select count(*) from book
+        <if test="_parameter != null">
+            <include refid="Example_Where_Clause"/>
+        </if>
+    </select>
+    <update id="updateByExampleSelective" parameterType="map">
+        update book
+        <set>
+            <if test="record.bid != null">
+                bid = #{record.bid,jdbcType=INTEGER},
+            </if>
+            <if test="record.total != null">
+                total = #{record.total,jdbcType=INTEGER},
+            </if>
+            <if test="record.current != null">
+                current = #{record.current,jdbcType=INTEGER},
+            </if>
+            <if test="record.bname != null">
+                bname = #{record.bname,jdbcType=VARCHAR},
+            </if>
+            <if test="record.author != null">
+                author = #{record.author,jdbcType=VARCHAR},
+            </if>
+            <if test="record.publish != null">
+                publish = #{record.publish,jdbcType=VARCHAR},
+            </if>
+            <if test="record.isbn != null">
+                isbn = #{record.isbn,jdbcType=VARCHAR},
+            </if>
+            <if test="record.price != null">
+                price = #{record.price,jdbcType=DECIMAL},
+            </if>
+            <if test="record.info != null">
+                info = #{record.info,jdbcType=VARCHAR},
+            </if>
+            <if test="record.cid != null">
+                cid = #{record.cid,jdbcType=INTEGER},
+            </if>
+            <if test="record.view != null">
+                view = #{record.view,jdbcType=INTEGER},
+            </if>
+            <if test="record.borrow != null">
+                borrow = #{record.borrow,jdbcType=INTEGER},
+            </if>
+            <if test="record.isDeleted != null">
+                is_deleted = #{record.isDeleted,jdbcType=BIT},
+            </if>
+        </set>
+        <if test="_parameter != null">
+            <include refid="Update_By_Example_Where_Clause"/>
+        </if>
+    </update>
+    <update id="updateByExample" parameterType="map">
+        update book
+        set bid = #{record.bid,jdbcType=INTEGER},
+        total = #{record.total,jdbcType=INTEGER},
+        current = #{record.current,jdbcType=INTEGER},
+        bname = #{record.bname,jdbcType=VARCHAR},
+        author = #{record.author,jdbcType=VARCHAR},
+        publish = #{record.publish,jdbcType=VARCHAR},
+        isbn = #{record.isbn,jdbcType=VARCHAR},
+        price = #{record.price,jdbcType=DECIMAL},
+        info = #{record.info,jdbcType=VARCHAR},
+        cid = #{record.cid,jdbcType=INTEGER},
+        view = #{record.view,jdbcType=INTEGER},
+        borrow = #{record.borrow,jdbcType=INTEGER},
+        is_deleted = #{record.isDeleted,jdbcType=BIT}
+        <if test="_parameter != null">
+            <include refid="Update_By_Example_Where_Clause"/>
+        </if>
+    </update>
+    <update id="updateByPrimaryKeySelective" parameterType="io.github.whywhathow.books.pojo.Book">
+        update book
+        <set>
+            <if test="bname != null">
+                bname = #{bname,jdbcType=VARCHAR},
+            </if>
+            <if test="author != null">
+                author = #{author,jdbcType=VARCHAR},
+            </if>
+            <if test="publish != null">
+                publish = #{publish,jdbcType=VARCHAR},
+            </if>
+            <if test="isbn != null">
+                isbn = #{isbn,jdbcType=VARCHAR},
+            </if>
+            <if test="price != null">
+                price = #{price,jdbcType=DECIMAL},
+            </if>
+            <if test="info != null">
+                info = #{info,jdbcType=VARCHAR},
+            </if>
+            <if test="cid != null">
+                cid = #{cid,jdbcType=INTEGER},
+            </if>
+            <if test="view != null">
+                view = #{view,jdbcType=INTEGER},
+            </if>
+            <if test="borrow != null">
+                borrow = #{borrow,jdbcType=INTEGER},
+            </if>
+            <if test="isDeleted != null">
+                is_deleted = #{isDeleted,jdbcType=BIT},
+            </if>
+        </set>
+        where bid = #{bid,jdbcType=INTEGER}
+        and total = #{total,jdbcType=INTEGER}
+        and current = #{current,jdbcType=INTEGER}
+    </update>
+    <update id="updateByPrimaryKey" parameterType="io.github.whywhathow.books.pojo.Book">
+    update book
+    set bname = #{bname,jdbcType=VARCHAR},
+      author = #{author,jdbcType=VARCHAR},
+      publish = #{publish,jdbcType=VARCHAR},
+      isbn = #{isbn,jdbcType=VARCHAR},
+      price = #{price,jdbcType=DECIMAL},
+      info = #{info,jdbcType=VARCHAR},
+      cid = #{cid,jdbcType=INTEGER},
+      view = #{view,jdbcType=INTEGER},
+      borrow = #{borrow,jdbcType=INTEGER},
+      is_deleted = #{isDeleted,jdbcType=BIT}
+    where bid = #{bid,jdbcType=INTEGER}
+      and total = #{total,jdbcType=INTEGER}
+      and current = #{current,jdbcType=INTEGER}
+  </update>
+</mapper>
