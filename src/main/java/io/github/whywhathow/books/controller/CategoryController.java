@@ -8,7 +8,7 @@ import io.swagger.annotations.ApiOperation;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
-@Api("商品分类的相关接口-- Pass")
+@Api("图书分类的相关接口-- Pass")
 @RequestMapping("/category")
 @CrossOrigin
 @RestController
@@ -17,14 +17,6 @@ public class CategoryController {
     @Autowired
     CategoryService service;
 
-    /**
-     * @return com.sdut.onlinestore.utils.Result
-     * @Author whywhathow
-     * TODO: 添加一个分类
-     * 前端: 提供相应的json 数据
-     * 后端:
-     * @Param [category]
-     **/
     @ApiOperation(value = "填写表单添加一个分类,pass" ,notes = "{\n" +
             "\t\"cname\":\"手环\",\n" +
             "\t\"parentid\":0\n" +
@@ -65,17 +57,17 @@ public class CategoryController {
     }
 // TODo  product controller 重新检查
 //    @Autowired
-//    AssetsService productService;
+//    BookService productService;
 
     /**
      * @return com.sdut.onlinestore.utils.Result
      * @Author whywhathow
-     * TODO: 用户点击某个category, 获取 商品列表
+     * TODO: 用户点击某个category, 获取 图书列表
      * 前端: {category: category,start:start, rows:rows}
      * 后端:  PageInfo{list[],total,...}
      * @Param [category]
      **/
-//    @ApiOperation(value = "通过商品分类获取商品信息", notes = "与http://ip/product/cat方法重复", response = Assets.class)
+//    @ApiOperation(value = "通过图书分类获取图书信息", notes = "与http://ip/product/cat方法重复", response = Book.class)
 //    @PostMapping("/get")
 //    public Result getCategory(@RequestBody CategoryVo categoryVo) {
 //        return productService.selectByCategory(categoryVo);

@@ -1,8 +1,9 @@
 package io.github.whywhathow.books.pojo;
 
-public class Book {
+import java.util.Date;
 
-    private Integer bid;
+public class Book {
+    private String bid;
 
     private String bname;
 
@@ -14,35 +15,28 @@ public class Book {
 
     private Long price;
 
-    private Integer cid;
+    private String info;
 
-    private Integer view;
+    private Integer cid;
 
     private Integer borrow;
 
     private Integer total;
 
-    private Boolean isDeleted;
+    private Integer state;
 
     private Integer current;
 
-    private String info;
-    /***
-     * @Author whywhathow
-     * TODO : 判断图书是否超期
-     * @return boolean
-     **/
-    public  boolean isOverFlow(){
+    private Date createTime;
 
-        return  false ;
-    }
+    private Date updateTime;
 
-    public Integer getBid() {
+    public String getBid() {
         return bid;
     }
 
-    public void setBid(Integer bid) {
-        this.bid = bid;
+    public void setBid(String bid) {
+        this.bid = bid == null ? null : bid.trim();
     }
 
     public String getBname() {
@@ -85,20 +79,20 @@ public class Book {
         this.price = price;
     }
 
+    public String getInfo() {
+        return info;
+    }
+
+    public void setInfo(String info) {
+        this.info = info == null ? null : info.trim();
+    }
+
     public Integer getCid() {
         return cid;
     }
 
     public void setCid(Integer cid) {
         this.cid = cid;
-    }
-
-    public Integer getView() {
-        return view;
-    }
-
-    public void setView(Integer view) {
-        this.view = view;
     }
 
     public Integer getBorrow() {
@@ -117,12 +111,12 @@ public class Book {
         this.total = total;
     }
 
-    public Boolean getIsDeleted() {
-        return isDeleted;
+    public Integer getState() {
+        return state;
     }
 
-    public void setIsDeleted(Boolean isDeleted) {
-        this.isDeleted = isDeleted;
+    public void setState(Integer state) {
+        this.state = state;
     }
 
     public Integer getCurrent() {
@@ -133,12 +127,19 @@ public class Book {
         this.current = current;
     }
 
-    public String getInfo() {
-        return info;
+    public Date getCreateTime() {
+        return createTime;
     }
 
-    public void setInfo(String info) {
-        this.info = info == null ? null : info.trim();
+    public void setCreateTime(Date createTime) {
+        this.createTime = createTime;
     }
 
+    public Date getUpdateTime() {
+        return updateTime;
+    }
+
+    public void setUpdateTime(Date updateTime) {
+        this.updateTime = updateTime;
+    }
 }
