@@ -2,6 +2,10 @@ package io.github.whywhathow.books.pojo;
 
 import java.util.Date;
 
+/**
+ * @Author whywhathow
+ * state :用户状态, 0:未激活,  1: 正常用户, 2: 超期用户(借阅图书存在超期关系)
+ **/
 public class User {
     private Integer owe;
 

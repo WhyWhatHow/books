@@ -7,6 +7,7 @@ import java.util.List;
 
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
+import org.apache.ibatis.annotations.Select;
 import org.springframework.stereotype.Repository;
 
 @Repository
@@ -33,4 +34,7 @@ public interface RelationMapper {
     int updateByPrimaryKeySelective(Relation record);
 
     int updateByPrimaryKey(Relation record);
+
+    @Select("select * from relation where uid =#{uid} and real_return is NULL ")
+    List<Relation> selectByUid(String uid);
 }

@@ -25,6 +25,13 @@ public class UserController {
     @Autowired
     RedisTemplate redisTemplate;
 
+    @ApiOperation(value = "用户借书接口", notes = "需要提供用户uid,和图书bid")
+    @PostMapping("/borrow")
+    public Result borrowBook(@RequestBody BorrowVo vo) {
+        return service.borrowBook(vo);
+    }
+
+
     @GetMapping("/hello")
     public Result hello() {
         Result result = new Result();

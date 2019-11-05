@@ -1,16 +1,19 @@
 package io.github.whywhathow.books.service.impl;
 
+import io.github.whywhathow.books.controller.BorrowVo;
+import io.github.whywhathow.books.mapper.BookMapper;
+import io.github.whywhathow.books.mapper.RelationMapper;
+import io.github.whywhathow.books.pojo.*;
 import io.github.whywhathow.books.service.MailService;
 import io.github.whywhathow.books.service.UserService;
+import io.github.whywhathow.books.utils.TimeUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.autoconfigure.amqp.RabbitProperties;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
 import io.github.whywhathow.books.mapper.MenuMapper;
 import io.github.whywhathow.books.mapper.UserMapper;
-import io.github.whywhathow.books.pojo.Menu;
-import io.github.whywhathow.books.pojo.Role;
-import io.github.whywhathow.books.pojo.User;
 import io.github.whywhathow.books.utils.MD5Util;
 import io.github.whywhathow.books.utils.Result;
 
@@ -23,6 +26,10 @@ import java.util.List;
 @Service
 public class UserServiceImpl implements UserService {
 
+    @Autowired
+    RelationMapper relationMapper;
+    @Autowired
+    BookMapper bookmapper;
     @Autowired
     UserMapper mapper;
 
@@ -74,7 +81,7 @@ public class UserServiceImpl implements UserService {
     }
 
 
-    @Override
+    @Override//TODO  2019年11月5日21:27:39 check  if user have overdate book ???
     public Result loginUser(User user, HttpServletRequest request) {
 //        return null;
         Result result = new Result();
@@ -89,7 +96,6 @@ public class UserServiceImpl implements UserService {
             result.setMessage("Server Problem!! -- Login user ,encryption");
             return result;
         }
-
         // 根据用户名获取用户
         User user1 = null;
         try {
@@ -102,14 +108,13 @@ public class UserServiceImpl implements UserService {
         result.setCode(202);
         if (user1 != null) {
             if (encryption.equals(user1.getPassword())) {
+                dealWithOverdueBook(user1);
                 result.setSuccess(true);
                 result.setData(user1);
                 request.getSession().setAttribute("user", user1);
                 result.setMessage("Login In Success");
-
             } else {
                 result.setMessage("password or username is wrong!! ");
-
             }
         } else {
             result.setMessage("userName is wrong");
@@ -245,10 +250,10 @@ public class UserServiceImpl implements UserService {
             result.setMessage("Server's problem,  --");
             return result;
         }
-        if(StringUtils.isEmpty(user)) {
+        if (StringUtils.isEmpty(user)) {
             result.setMessage("改用户名不存在");
-            return result ;
-        }else {
+            return result;
+        } else {
             result.setMessage("用户名存在");
             result.setData(user);
             result.setCode(202);
@@ -257,15 +262,98 @@ public class UserServiceImpl implements UserService {
         return result;
     }
 
+    @Override
+    public Result borrowBook(BorrowVo vo) {
+        Result result = new Result();
+        result.setSuccess(false);
+        User user = null;
+        Book book = null;
+        // 1. 获取用户信息(用户未登录是可以查看图书详情), 保证用户存在,检查用户状态,是否有超期现象若有，拒绝借阅，并提示超期 TODO : 优化 用户信息, 用户信息可以保存在redis里,减少数据库的访问次数
+        try {
+            user = mapper.selectByPrimaryKey(vo.getUid());
+            // 用户存在超期行为,不可以借书
+            if (user.getOwe() > 0) {
+                result.setMessage("存在超期图书，请缴费后在进行借阅行为");
+                return result;
+            }
+        } catch (Exception e) {
+            result.setCode(500);
+            result.setMessage("Server's problem,  -- 获取用户信息失败");
+            return result;
+        }
+        // 2. 获取图书信息, 保证图书可以借阅
+        try {
+            book = bookmapper.selectByPrimaryKey(vo.getBid());
+            if (book.getCurrent() == 0) {
+                result.setMessage("由于图书过于热门,已经被读者全都借走了,请您隔段时间再来借阅图书!!!");
+                return result;
+            }
+            book.setBorrow(); // 设置图书借阅后的状态
+        } catch (Exception e) {
+            result.setCode(500);
+            result.setMessage("Server's problem,  -- 获取图书信息失败");
+            return result;
+        }
+        // 3. 用户借书
+        Relation relation = new Relation(vo);
+        return borrow(relation, book);
+    }
+
+    @Transactional
+// 用户借书核心代码
+    Result borrow(Relation relation, Book book) {
+        Result result = new Result();
+        result.setSuccess(false);
+        try {
+            bookmapper.updateByPrimaryKeySelective(book);
+        } catch (Exception e) {
+            e.printStackTrace();
+            result.setCode(500);
+            result.setMessage("Server's problem, -- error: update Book information in Borrow a book");
+            return result;
+        }
+        try {
+            relationMapper.updateByPrimaryKeySelective(relation);
+        } catch (Exception e) {
+            result.setCode(500);
+            e.printStackTrace();
+            result.setMessage("Server's problem,  -- error: update book relation in borrow a book");
+            return result;
+        }
+        result.setSuccess(true);
+        result.setCode(202);
+        result.setMessage("用户借书成功");
+        return result;
+    }
+
     public ArrayList<Menu> getChildrens(Integer parentId, List<Menu> list) {
         ArrayList<Menu> arrayList = new ArrayList<>(100);
         for (Menu menu : list) {
-            if (parentId == menu.getParentid()) {
+            if (parentId.equals(menu.getParentid())) {
                 menu.setChildrenList(getChildrens(menu.getId(), list));
                 arrayList.add(menu);
             }
         }
         return arrayList;
+    }
+
+    public User dealWithOverdueBook(User user) {// 检查用户是否存在超期图书,并确定是否设置罚款金额
+        try {
+            List<Relation> list = relationMapper.selectByUid(user.getUid());
+            int sum = 0;
+            Date now = new Date();
+            for (Relation relation : list) {
+                sum += TimeUtils.getOverTime(now, relation.getNeedReturn());
+            }
+            if (sum > 0) {
+                user.setState(2);//
+                user.setOwe(sum);
+                mapper.updateByPrimaryKeySelective(user);
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return user;
     }
 
 }

@@ -3,7 +3,7 @@
 <mapper namespace="io.github.whywhathow.books.mapper.RelationMapper">
     <resultMap id="BaseResultMap" type="io.github.whywhathow.books.pojo.Relation">
         <id column="uid" property="uid" jdbcType="VARCHAR"/>
-        <id column="bid" property="bid" jdbcType="INTEGER"/>
+        <id column="bid" property="bid" jdbcType="VARCHAR"/>
         <result column="borrow_time" property="borrowTime" jdbcType="TIMESTAMP"/>
         <result column="real_return" property="realReturn" jdbcType="TIMESTAMP"/>
         <result column="need_return" property="needReturn" jdbcType="TIMESTAMP"/>
@@ -92,12 +92,12 @@
         <include refid="Base_Column_List"/>
         from relation
         where uid = #{uid,jdbcType=VARCHAR}
-        and bid = #{bid,jdbcType=INTEGER}
+        and bid = #{bid,jdbcType=VARCHAR}
     </select>
     <delete id="deleteByPrimaryKey" parameterType="io.github.whywhathow.books.pojo.RelationKey">
     delete from relation
     where uid = #{uid,jdbcType=VARCHAR}
-      and bid = #{bid,jdbcType=INTEGER}
+      and bid = #{bid,jdbcType=VARCHAR}
   </delete>
     <delete id="deleteByExample" parameterType="io.github.whywhathow.books.pojo.RelationExample">
         delete from relation
@@ -106,9 +106,9 @@
         </if>
     </delete>
     <insert id="insert" parameterType="io.github.whywhathow.books.pojo.Relation">
-    insert into relation (uid, bid, borrow_time, 
+    insert into relation (uid, bid, borrow_time,
       real_return, need_return)
-    values (#{uid,jdbcType=VARCHAR}, #{bid,jdbcType=INTEGER}, #{borrowTime,jdbcType=TIMESTAMP}, 
+    values (#{uid,jdbcType=VARCHAR}, #{bid,jdbcType=VARCHAR}, #{borrowTime,jdbcType=TIMESTAMP},
       #{realReturn,jdbcType=TIMESTAMP}, #{needReturn,jdbcType=TIMESTAMP})
   </insert>
     <insert id="insertSelective" parameterType="io.github.whywhathow.books.pojo.Relation">
@@ -135,7 +135,7 @@
                 #{uid,jdbcType=VARCHAR},
             </if>
             <if test="bid != null">
-                #{bid,jdbcType=INTEGER},
+                #{bid,jdbcType=VARCHAR},
             </if>
             <if test="borrowTime != null">
                 #{borrowTime,jdbcType=TIMESTAMP},
@@ -162,7 +162,7 @@
                 uid = #{record.uid,jdbcType=VARCHAR},
             </if>
             <if test="record.bid != null">
-                bid = #{record.bid,jdbcType=INTEGER},
+                bid = #{record.bid,jdbcType=VARCHAR},
             </if>
             <if test="record.borrowTime != null">
                 borrow_time = #{record.borrowTime,jdbcType=TIMESTAMP},
@@ -181,7 +181,7 @@
     <update id="updateByExample" parameterType="map">
         update relation
         set uid = #{record.uid,jdbcType=VARCHAR},
-        bid = #{record.bid,jdbcType=INTEGER},
+        bid = #{record.bid,jdbcType=VARCHAR},
         borrow_time = #{record.borrowTime,jdbcType=TIMESTAMP},
         real_return = #{record.realReturn,jdbcType=TIMESTAMP},
         need_return = #{record.needReturn,jdbcType=TIMESTAMP}
@@ -203,7 +203,7 @@
             </if>
         </set>
         where uid = #{uid,jdbcType=VARCHAR}
-        and bid = #{bid,jdbcType=INTEGER}
+        and bid = #{bid,jdbcType=VARCHAR}
     </update>
     <update id="updateByPrimaryKey" parameterType="io.github.whywhathow.books.pojo.Relation">
     update relation
@@ -211,6 +211,6 @@
       real_return = #{realReturn,jdbcType=TIMESTAMP},
       need_return = #{needReturn,jdbcType=TIMESTAMP}
     where uid = #{uid,jdbcType=VARCHAR}
-      and bid = #{bid,jdbcType=INTEGER}
+      and bid = #{bid,jdbcType=VARCHAR}
   </update>
 </mapper>

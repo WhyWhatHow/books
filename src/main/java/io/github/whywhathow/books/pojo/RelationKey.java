@@ -3,7 +3,7 @@ package io.github.whywhathow.books.pojo;
 public class RelationKey {
     private String uid;
 
-    private Integer bid;
+    private String bid;
 
     public String getUid() {
         return uid;
@@ -13,11 +13,11 @@ public class RelationKey {
         this.uid = uid == null ? null : uid.trim();
     }
 
-    public Integer getBid() {
+    public String getBid() {
         return bid;
     }
 
-    public void setBid(Integer bid) {
+    public void setBid(String bid) {
         this.bid = bid;
     }
 }

@@ -2,6 +2,10 @@ package io.github.whywhathow.books.pojo;
 
 import java.util.Date;
 
+/**
+ * @Author whywhathow
+ * state : 图书状态,0 表示未订购(尚未添加) 1.表示当前可以借阅, 2 表示图书已被借光, 图书不可以借阅的状态
+ **/
 public class Book {
     private String bid;
 
@@ -105,6 +109,14 @@ public class Book {
 
     public Integer getTotal() {
         return total;
+    }
+
+    public void setBorrow() {
+        this.current--;
+        this.borrow++;
+        if (this.current == 0) {
+            this.state = 2;
+        }
     }
 
     public void setTotal(Integer total) {
