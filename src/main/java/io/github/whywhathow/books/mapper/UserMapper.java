@@ -1,5 +1,6 @@
 package io.github.whywhathow.books.mapper;
 
+import io.github.whywhathow.books.pojo.Book;
 import io.github.whywhathow.books.pojo.User;
 import io.github.whywhathow.books.pojo.UserExample;
 import java.util.List;
@@ -35,6 +36,10 @@ public interface UserMapper {
     int updateByPrimaryKey(User record);
     @Select("select * from user where username = #{username}")
     User selectByUsername(String username);
+
+    @Select("SELECT b.*, FROM book b , relation r   WHERE r.`uid` = #{uid} AND r.`bid`= b.`bid` AND real_return IS NULL")
+    List<Book> selectUserBorrorwHistory(String uid);
+
 
 
 }
