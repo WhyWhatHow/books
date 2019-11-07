@@ -5,6 +5,11 @@ public class RelationKey {
 
     private String bid;
 
+    public RelationKey(String uid, String bid) {
+        this.uid = uid;
+        this.bid = bid;
+    }
+
     public String getUid() {
         return uid;
     }

@@ -87,4 +87,8 @@ public interface BookMapper {
     List<Book> selectToReportMore(Book book);
 
     List<Book> selectToReport(Book book);
+
+    @Update("update book set current = current+1  where bid = #{bid}")
+    int updateCurrentNumByBid(String vid);
+
 }

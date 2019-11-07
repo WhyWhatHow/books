@@ -7,6 +7,9 @@ import java.util.Date;
  * state : 图书状态,0 表示未订购(尚未添加) 1.表示当前可以借阅, 2 表示图书已被借光, 图书不可以借阅的状态
  **/
 public class Book {
+    public Book(String bid) {
+        this.bid = bid;
+    }
     private String bid;
 
     private String bname;
@@ -111,13 +114,24 @@ public class Book {
         return total;
     }
 
-    public void setBorrow() {
+    /**
+     * @return void
+     * @Author whywhathow
+     * @description: 设置用户借书后图书的状态, 图书借阅数量加一, 图书现存数量减一
+     **/
+    public void setBorrowStatus() {
         this.current--;
         this.borrow++;
         if (this.current == 0) {
             this.state = 2;
         }
     }
+
+    public void setReturnBookStatus() {
+        this.current++;
+    }
+
+
 
     public void setTotal(Integer total) {
         this.total = total;

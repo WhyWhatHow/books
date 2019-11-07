@@ -288,7 +288,7 @@ public class UserServiceImpl implements UserService {
                 result.setMessage("由于图书过于热门,已经被读者全都借走了,请您隔段时间再来借阅图书!!!");
                 return result;
             }
-            book.setBorrow(); // 设置图书借阅后的状态
+            book.setBorrowStatus(); // 设置图书借阅后的状态
         } catch (Exception e) {
             result.setCode(500);
             result.setMessage("Server's problem,  -- 获取图书信息失败");
@@ -325,6 +325,77 @@ public class UserServiceImpl implements UserService {
         result.setMessage("用户借书成功");
         return result;
     }
+
+
+    @Override
+    @Transactional
+    public Result returnBook(BorrowVo vo) {
+        Result result = new Result();
+        result.setSuccess(false);
+        // 1.  修改图书数量
+        try {
+            bookmapper.updateCurrentNumByBid(vo.getBid());
+        } catch (Exception e) {
+            result.setCode(500);
+            result.setMessage("Server's problem,  -- return book in update book current number ");
+            return result;
+        }
+        // 2. 获取当前系统时间, 用户与本书的节约关系,判断是否超期
+        int overTime = 0;
+        Relation relation = null;
+        try {
+            Date now = new Date();
+            RelationKey key = new RelationKey(vo.getUid(), vo.getBid());
+            relation = relationMapper.selectByPrimaryKey(key);
+            relation.setRealReturn(now);
+            overTime = TimeUtils.getOverTime(now, relation.getBorrowTime());
+        } catch (Exception e) {
+            result.setCode(500);
+            result.setMessage("Server's problem,  -- user return book in get user-book relation  ");
+            return result;
+        }
+        // 3. 超期处理,为用户设置罚款,并修改用户的状态为不可借阅状态
+        if (overTime > 0) {
+            try {
+                mapper.updateUserOweAndState(vo.getUid(), overTime);
+            } catch (Exception e) {
+                result.setCode(500);
+                result.setMessage("Server's problem,  -- user return book in set user status to owe  ");
+                return result;
+            }
+        }
+        // 4. 用户还书
+        try {
+            relationMapper.updateByPrimaryKeySelective(relation);
+        } catch (Exception e) {
+            result.setCode(500);
+            result.setMessage("Server's problem,  -- user return book in update relation");
+            return result;
+        }
+        result.setSuccess(true);
+        result.setCode(202);
+        result.setMessage("success in return books ");
+        return result;
+    }
+
+    @Override
+    public Result payOwe(String uid) {
+        Result result = new Result();
+        result.setSuccess(false);
+        try {
+            mapper.updateUserOweToNormal(uid);
+        } catch (Exception e) {
+            result.setCode(500);
+            result.setMessage("Server's problem,  -- user pay money for owe ");
+            return result;
+        }
+        result.setSuccess(true);
+        result.setCode(202);
+        result.setMessage("Success user pay owe money , now , you can borrow books.");
+        return result;
+
+    }
+
 
     public ArrayList<Menu> getChildrens(Integer parentId, List<Menu> list) {
         ArrayList<Menu> arrayList = new ArrayList<>(100);

@@ -31,6 +31,18 @@ public class UserController {
         return service.borrowBook(vo);
     }
 
+    @ApiOperation(value = "用户还书接口", notes = "需要提供用户uid和图书bid")
+    @PostMapping("/return")
+    public Result returnBook(@RequestBody BorrowVo vo) {
+        return service.returnBook(vo);
+    }
+
+    @ApiOperation(value = "用户提交欠款接口", notes = "需要提供用户uid")
+    @PostMapping("/pay")
+    public Result returnBook(@RequestBody String uid) {
+        return service.payOwe(uid);
+    }
+
 
     @GetMapping("/hello")
     public Result hello() {

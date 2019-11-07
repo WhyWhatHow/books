@@ -24,4 +24,8 @@ public interface UserService {
     Result checkUserName(String username);
 
     Result borrowBook(BorrowVo vo);
+
+    Result returnBook(BorrowVo vo);
+
+    Result payOwe(String uid);
 }
