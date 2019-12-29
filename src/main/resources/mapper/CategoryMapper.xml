@@ -229,4 +229,35 @@
       is_deleted = #{isDeleted,jdbcType=BIT}
     where cid = #{cid,jdbcType=INTEGER}
   </update>
+
+
+    <!--   自己的方法-->
+    <select id="selectToList" parameterType="category" resultMap="BaseResultMap">
+        select * from category
+        <where>
+            <if test="cname !=null and cname != '' ">
+                and cname like concat('%',#{cname},'%')
+            </if>
+            <if test="cid != null and cid !='' ">
+                and cid = #{cid}
+            </if>
+            <if test="isDeleted != null  ">
+                and is_deleted = #{isDeleted}
+            </if>
+        </where>
+    </select>
+    <select id="selectToListCount" parameterType="category" resultType="Long">
+        select count(cid) from category
+        <where>
+            <if test="cname !=null and cname != '' ">
+                and cname like concat('%',#{cname},'%')
+            </if>
+            <if test="isDeleted != null  ">
+                and is_deleted = #{isDeleted}
+            </if>
+            <if test="cid !=null">
+                and cid =#{cid}
+            </if>
+        </where>
+    </select>
 </mapper>

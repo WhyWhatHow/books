@@ -27,8 +27,8 @@ public class FileController {
         String fileName = file.getOriginalFilename();
         String suffix = fileName.substring(fileName.lastIndexOf('.'));
         String newFileName = UUID.randomUUID().toString().replace("-", "") + suffix;
-        String path = "D:\\onlinestorepic\\";
-//        String path = System.getProperty("user.dir")+"/src/main/resources/static/pic/";
+        String path = "D:\\BMSPic\\";
+//        String path = System.getProperty("user.dir")+"/src/main/resourc es/static/pic/";
 //        File dir = new File(path);
 //        if(!dir.exists()) {
 //            dir.mkdir();

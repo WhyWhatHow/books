@@ -15,8 +15,8 @@ public class MenuServiceImpl implements MenuService {
     @Autowired
     MenuMapper mapper ;
     @Override
-    public List<Menu> getMenuByRole(Role role) {
-        return mapper.selectByRole(role);
+    public List<Menu> getMenuByRole(int rid) {
+        return mapper.selectByRole(rid);
     }
 
     @Override

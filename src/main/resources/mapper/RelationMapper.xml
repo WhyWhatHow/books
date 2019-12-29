@@ -106,9 +106,9 @@
         </if>
     </delete>
     <insert id="insert" parameterType="io.github.whywhathow.books.pojo.Relation">
-    insert into relation (uid, bid, borrow_time,
+    insert into relation (uid, bid, borrow_time, 
       real_return, need_return)
-    values (#{uid,jdbcType=VARCHAR}, #{bid,jdbcType=VARCHAR}, #{borrowTime,jdbcType=TIMESTAMP},
+    values (#{uid,jdbcType=VARCHAR}, #{bid,jdbcType=VARCHAR}, #{borrowTime,jdbcType=TIMESTAMP}, 
       #{realReturn,jdbcType=TIMESTAMP}, #{needReturn,jdbcType=TIMESTAMP})
   </insert>
     <insert id="insertSelective" parameterType="io.github.whywhathow.books.pojo.Relation">

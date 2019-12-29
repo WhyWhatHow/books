@@ -2,11 +2,10 @@ package io.github.whywhathow.books.controller;
 
 import com.github.pagehelper.PageInfo;
 import io.github.whywhathow.books.pojo.Book;
+import io.github.whywhathow.books.pojo.User;
 import io.github.whywhathow.books.service.BookService;
 import io.github.whywhathow.books.utils.Result;
-import io.github.whywhathow.books.vo.BookCS;
-import io.github.whywhathow.books.vo.BookVo;
-import io.github.whywhathow.books.vo.CategoryVo;
+import io.github.whywhathow.books.vo.*;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -20,12 +19,15 @@ import javax.servlet.http.HttpServletRequest;
 @Api("图书接口文档-- Pass")
 @RequestMapping("/book")
 @CrossOrigin
+
 @RestController
 public class BookController {
     @Autowired
     private BookService service;
 
-    @ApiOperation(value = "添加一本图书", notes = "需要给出图书分类的编号(外键 可以取值1 ,没有办法),可以保证这个数据一定不会出错")
+    @ApiOperation(value = "添加一本图书", notes = "需要给出图书分类的编号(外键 可以取值1 ,没有办法),可以保证这个数据一定不会出错\n" +
+            "原因是，添加 图书的分类编号是来自数据库，可以保证数据不会出错... " +
+            "我在测试是默认使用的1")
     @PostMapping("/add")
     public Result insertBook(@RequestBody Book book, HttpServletRequest request) {
         return service.insertBook(book, request);
@@ -87,7 +89,7 @@ public class BookController {
     }
 
     @ApiOperation(value = "图书分页展示,感觉有点没有用", response = Book.class)
-    @GetMapping("/all")// 默认查询方式, 分页返回,这个方法没有用, 仅用作测试
+    @PostMapping("/all")// 默认查询方式, 分页返回,这个方法没有用, 仅用作测试
     public Result selectByDefault(Integer start, Integer rows) {
         if (StringUtils.isEmpty(start)) {
             start = 1;
@@ -98,9 +100,13 @@ public class BookController {
         return service.selectByDefault(start, rows);
     }
 
-    @ApiOperation(value = "图书按分类查询,分页显示", notes = "???2019年11月4日22:47:39", response = PageInfo.class)
+    @ApiOperation(value = "图书按分类查询,分页显示", notes = "{\n" +
+            "  \"category\": \n" +
+            "{ \"cid\":1\n" +
+            "}\n" +
+            "}", response = PageInfo.class)
     @PostMapping("/cat")
-//     notes =  "留下了不加requestBody的泪水"
+//     notes =  "留下了不加requestBody的泪水" 。哦真的吗！真不愧是faker
     public Result selectByCategory(@RequestBody CategoryVo vo) {
         return service.selectByCategory(vo);
     }
@@ -113,24 +119,50 @@ public class BookController {
         return service.selectTolist(book);
     }
 
-// TODO 查询用户借阅信息
-//    @ApiOperation("获取当前用户下借阅信息")
-//    @GetMapping("/cid")
-//    public Result selectGroupByUid(String uid) {
-//        return service.selectByGroupId(uid);
-//    }
 
-//    @ApiOperation("根据用户id ,按固定资产的状态进行分类 ")
-//    @GetMapping("/state")
-//    public Result selectGroupByState(String uid) {
-//        return service.selectGroupStateByUid(uid);
-//    }
+    @ApiOperation("获取用户所有借阅图书的分类信息")
+    @PostMapping("/userpie")
+    public Result selectUserPieByUser(User user) {
+        return service.selectUserPieByUser(user.getUid());
+    }
 
 
-//    @PostMapping ("/see")
-//    @ApiOperation("根据用户id,分类名称,资产状态查找的资产详细信息")
-//    public Result selectByCnameAndStateAndUid( BookCS Book){
-//        return service.selectByCidStateAndUid(Book.getCname(),Book.getUid(),Book.getState());
-//    }
+    @ApiOperation("获取图书分类分布状态图")
+    @GetMapping("/pie")
+    public Result getBookCategoryCount() {
+        return service.selectCategoryCount();
+    }
+
+    @ApiOperation("获取当前借阅的热门图书前十本")
+    @GetMapping("/hot")
+    public Result getHotBook() {
+        return service.getHotBook();
+    }
+
+    @ApiOperation("获取当前借阅的热门图书前十本")
+    @GetMapping("/sideShow")
+    public Result getSideShow() {
+        return service.getSideShow();
+    }
+
+
+    @ApiOperation("获取该分类下的图书")
+    @GetMapping("/see")
+    public Result getCategoryBook(Integer cid) {
+        return service.getCategoryBook(cid);
+    }
+
+    @ApiOperation("获取用户借阅图书在该分类下的图书列表")
+    @PostMapping("/userSee")
+    public Result getCategoryBookInUser(UserCategoryVo vo) {
+        return service.getCategoryBookInUser(vo);
+    }
+
+
+    @ApiOperation("批量修改图书状态信息， 正常状态，下架状态")
+    @PostMapping("/change")
+    public Result changeBookSateInListByBid(@RequestBody ChangeVo vo) {
+        return service.changeListByBidAndState(vo.getList(), vo.getState());
+    }
 
 }

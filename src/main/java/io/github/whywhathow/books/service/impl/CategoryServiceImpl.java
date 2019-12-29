@@ -1,16 +1,23 @@
 package io.github.whywhathow.books.service.impl;
 
+import com.github.pagehelper.PageHelper;
+import com.github.pagehelper.PageInfo;
 import io.github.whywhathow.books.mapper.CategoryMapper;
 import io.github.whywhathow.books.pojo.Category;
 import io.github.whywhathow.books.service.CategoryService;
 import io.github.whywhathow.books.utils.Result;
+import io.github.whywhathow.books.vo.CategoryVo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+import org.springframework.transaction.interceptor.TransactionAspectSupport;
 import org.springframework.util.StringUtils;
 
+import javax.servlet.http.HttpServletRequest;
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 @Service
@@ -63,9 +70,11 @@ public class CategoryServiceImpl implements CategoryService {
 
     @Override
 //    @CacheEvict  // 删除缓存
-    public Result insertCategory(Category category) {
+    public Result insertCategory(Category category, HttpServletRequest request) {
         Result result = new Result();
         result.setSuccess(false);
+        category.setCreateTime(new Date());
+        category.setUpdateTime(new Date());
         int res = 0;
         try {
             res = mapper.insertSelective(category);
@@ -87,11 +96,12 @@ public class CategoryServiceImpl implements CategoryService {
 
     @Override
 //    @CacheEvict // 删除缓存
-    public Result updateCategory(Category category) {
+    public Result updateCategory(Category category, HttpServletRequest request) {
         Result result = new Result();
         result.setSuccess(false);
         int res = 0 ;
         try {
+            category.setUpdateTime(new Date());
             res = mapper.updateByPrimaryKeySelective(category);
         } catch (Exception e) {
             result.setCode(500);
@@ -132,6 +142,87 @@ public class CategoryServiceImpl implements CategoryService {
 //        return null;
     }
 
+    @Override
+    public Result selectTolist(CategoryVo vo) {
+        Result result = new Result();
+        result.setSuccess(false);
+        PageInfo<Category> info = null;
+        try {
+            PageHelper.startPage(vo.getStart(), vo.getRows());
+            info = PageInfo.of(mapper.selectToList(vo.getCategory()));
+            info.setTotal(mapper.selectToListCount(vo.getCategory()));
+        } catch (Exception e) {
+            result.setCode(500);
+            result.setMessage("Server's problem,  -- page  like search");
+            return result;
+        }
+        result.setSuccess(true);
+        result.setCode(202);
+        result.setData(info);
+        result.setMessage("Success in get product list background ");
+        return result;
+
+    }
+
+    @Override
+    @Transactional(rollbackFor = Exception.class)
+    public Result changeListByBidAndState(List<Integer> list, boolean state) {
+
+        Result result = new Result();
+        result.setSuccess(false);
+        int res = 0;
+        try {
+            Date date = new Date();
+            for (Integer cid : list) {
+                res += mapper.updateByPidToChangeState(cid, state, date);
+            }
+        } catch (Exception e) {
+            result.setCode(500);
+            result.setMessage("Server's problem,  -- set category change list");
+            TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();//
+            return result;
+        }
+        result.setData(res);
+        result.setSuccess(true);
+        result.setCode(202);
+        result.setMessage("Success in update product list to change state ");
+        return result;
+
+    }
+
+    @Override
+    public Result detailByCid(Integer cid) {
+        Result result = new Result();
+        result.setSuccess(false);
+        Category category = null;
+//        int res = 0;
+        try {
+            category = mapper.selectByPrimaryKey(cid);
+        } catch (Exception e) {
+            result.setCode(500);
+            e.printStackTrace();
+            result.setMessage("Server's problem,  -- detail by cid ");
+            return result;
+        }
+        result.setData(category);
+        result.setSuccess(true);
+        result.setCode(202);
+        result.setMessage("Success in delete category");
+//        result.setData(res);
+        return result;
+    }
+
+    @Override
+    public Result edit(Category category, HttpServletRequest request) {
+        System.err.println(category);
+        if (StringUtils.isEmpty(category.getCid())) {
+            return insertCategory(category, request);
+        } else {
+            return updateCategory(category, request);
+        }
+    }
+
+
     /**
      * @return java.util.List<com.sdut.onlinestore.pojo.Category>
      * @Author whywhathow
@@ -151,5 +242,6 @@ public class CategoryServiceImpl implements CategoryService {
         }
         return arrayList;
     }
+
 
 }

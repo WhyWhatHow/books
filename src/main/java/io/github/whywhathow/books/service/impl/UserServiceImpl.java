@@ -1,14 +1,15 @@
 package io.github.whywhathow.books.service.impl;
 
-import io.github.whywhathow.books.controller.BorrowVo;
+import io.github.whywhathow.books.vo.BorrowVo;
 import io.github.whywhathow.books.mapper.BookMapper;
 import io.github.whywhathow.books.mapper.RelationMapper;
 import io.github.whywhathow.books.pojo.*;
 import io.github.whywhathow.books.service.MailService;
 import io.github.whywhathow.books.service.UserService;
 import io.github.whywhathow.books.utils.TimeUtils;
+import io.github.whywhathow.books.vo.HistoryVo;
+import io.github.whywhathow.books.vo.NowVo;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.autoconfigure.amqp.RabbitProperties;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
@@ -32,7 +33,6 @@ public class UserServiceImpl implements UserService {
     BookMapper bookmapper;
     @Autowired
     UserMapper mapper;
-
     @Autowired
     MailService mailService;
 
@@ -125,6 +125,17 @@ public class UserServiceImpl implements UserService {
     @Override
     public Result updateUser(User user) {
         Result result = new Result();
+        String password = user.getPassword();
+        // 用户修改密码
+        if (password.length() < 17 && password.length() > 5) {
+            try {
+                password = MD5Util.getEncryption(password);
+            } catch (UnsupportedEncodingException e) {
+                result.setMessage("Error in change password, MD5 Encryption error ");
+                e.printStackTrace();
+            }
+            user.setPassword(password);
+        }
         result.setSuccess(false);
         // 根据用户uid 修改信息, if 动态sql 所以好一点
         try {
@@ -140,9 +151,9 @@ public class UserServiceImpl implements UserService {
 //        result.setData(user);
         result.setSuccess(true);
         result.setCode(202);
+        result.setData(password);
         result.setMessage("update user success");
         return result;
-
     }
 
     @Autowired
@@ -168,7 +179,7 @@ public class UserServiceImpl implements UserService {
         // 获取 该角色对应的权限(所谓的菜单)
         List<Menu> list = null;
         try {
-            list = menuMapper.selectByRole(role);
+            list = menuMapper.selectByRole(rid);
         } catch (Exception e) {
             result.setCode(500);
             result.setMessage("Server's problem,  -- get menu list false  in getMenu menthod");
@@ -294,7 +305,33 @@ public class UserServiceImpl implements UserService {
             result.setMessage("Server's problem,  -- 获取图书信息失败");
             return result;
         }
-        // 3. 用户借书
+        // 3.获取用户当前的借阅信息，确保用户当前借阅图书中没有将要借阅的这本书
+        try {
+            List<Relation> relations = relationMapper.selectByUid(user.getUid());
+            boolean yes = relations.size() == 8;
+            if (!yes) {
+                String bid = book.getBid();
+                for (Relation relation : relations) {
+                    if (relation.getBid().equals(bid)) {
+                        yes = true;
+                        result.setMessage("可爱的读者，本书已经在您的包包里，耐心的等待你的检阅。。。。");
+                        break;
+                    }
+                }
+            }
+            // yes== true， 用户当前已经节约过这本书，或者用户借阅的图书已经有8本
+            if (yes) {
+                result.setMessage("当前已经借阅该图书，或者当前借阅数量已经达到最大值 8 本");
+                return result;
+            }
+        } catch (
+                Exception e) {
+            result.setCode(500);
+            result.setMessage("Server's problem,  --");
+            return result;
+        }
+
+        // 4. 用户借书
         Relation relation = new Relation(vo);
         return borrow(relation, book);
     }
@@ -313,7 +350,7 @@ public class UserServiceImpl implements UserService {
             return result;
         }
         try {
-            relationMapper.updateByPrimaryKeySelective(relation);
+            relationMapper.insertSelective(relation);
         } catch (Exception e) {
             result.setCode(500);
             e.printStackTrace();
@@ -340,7 +377,7 @@ public class UserServiceImpl implements UserService {
             result.setMessage("Server's problem,  -- return book in update book current number ");
             return result;
         }
-        // 2. 获取当前系统时间, 用户与本书的节约关系,判断是否超期
+        // 2. 获取当前系统时间, 用户与本书的借阅关系,判断是否超期
         int overTime = 0;
         Relation relation = null;
         try {
@@ -396,6 +433,81 @@ public class UserServiceImpl implements UserService {
 
     }
 
+    @Override// 查询用户的历史借阅信息
+    public Result getUserBorrowHistoryByUid(String uid) {
+        Result result = new Result();
+        result.setSuccess(false);
+        List<HistoryVo> list = new ArrayList<>();
+        try {
+            list = mapper.getBorrorwHistory(uid);
+            for (HistoryVo vo : list) {
+                System.err.println(vo);
+
+            }
+        } catch (Exception e) {
+            result.setCode(500);
+            result.setMessage("Server's problem,  -- get user borrow history by uid ");
+            return result;
+        }
+        if (list.size() > 0) {
+            result.setMessage("now borrow  list is not null");
+        } else {
+            result.setMessage("now borrow list is null");
+        }
+        result.setSuccess(true);
+        result.setCode(202);
+        result.setData(list);
+//        System.err.println(result);
+        return result;
+    }
+
+    @Override
+    public Result getUserBorrowNowByUid(String uid) {
+        Result result = new Result();
+        result.setSuccess(false);
+        List<NowVo> list = null;
+        try {
+            list = mapper.getBorrowNow(uid);
+            for (NowVo vo : list
+            ) {
+                System.err.println(vo);
+            }
+        } catch (Exception e) {
+            result.setCode(500);
+            result.setMessage("Server's problem,  -- get now borrow ");
+            return result;
+        }
+        if (list.size() > 0) {
+            result.setMessage("now borrow  list is not null");
+        } else {
+            result.setMessage("now borrow list is null");
+        }
+
+        result.setSuccess(true);
+        result.setCode(202);
+        result.setData(list);
+        return result;
+    }
+//    public Result getUserBorrowHistoryByUid(String uid) {
+//        Result result = new Result();
+//        result.setSuccess(false);
+//        List<HistoryVo> list = new ArrayList<>();
+//        try {
+//            list = mapper.getBorrorwHistory(uid);
+//            for (HistoryVo vo :
+//                    list) {
+//                System.err.println(vo);
+//
+//            }
+//        } catch (Exception e) {
+//            result.setCode(500);
+//            result.setMessage("Server's problem,  --");
+//            return result;
+//        }
+//        System.err.println(result);
+//        return result;
+//    }
+
 
     public ArrayList<Menu> getChildrens(Integer parentId, List<Menu> list) {
         ArrayList<Menu> arrayList = new ArrayList<>(100);
@@ -417,7 +529,7 @@ public class UserServiceImpl implements UserService {
                 sum += TimeUtils.getOverTime(now, relation.getNeedReturn());
             }
             if (sum > 0) {
-                user.setState(2);//
+                user.setState(2);// 用户超期，不可以借阅图书
                 user.setOwe(sum);
                 mapper.updateByPrimaryKeySelective(user);
             }

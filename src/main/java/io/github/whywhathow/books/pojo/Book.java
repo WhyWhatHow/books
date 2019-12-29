@@ -1,15 +1,11 @@
 package io.github.whywhathow.books.pojo;
 
 import java.util.Date;
-
 /**
  * @Author whywhathow
  * state : 图书状态,0 表示未订购(尚未添加) 1.表示当前可以借阅, 2 表示图书已被借光, 图书不可以借阅的状态
  **/
 public class Book {
-    public Book(String bid) {
-        this.bid = bid;
-    }
     private String bid;
 
     private String bname;
@@ -37,6 +33,8 @@ public class Book {
     private Date createTime;
 
     private Date updateTime;
+
+    private String imageUrl;
 
     public String getBid() {
         return bid;
@@ -113,7 +111,6 @@ public class Book {
     public Integer getTotal() {
         return total;
     }
-
     /**
      * @return void
      * @Author whywhathow
@@ -130,7 +127,6 @@ public class Book {
     public void setReturnBookStatus() {
         this.current++;
     }
-
 
 
     public void setTotal(Integer total) {
@@ -167,5 +163,13 @@ public class Book {
 
     public void setUpdateTime(Date updateTime) {
         this.updateTime = updateTime;
+    }
+
+    public String getImageUrl() {
+        return imageUrl;
+    }
+
+    public void setImageUrl(String imageUrl) {
+        this.imageUrl = imageUrl == null ? null : imageUrl.trim();
     }
 }

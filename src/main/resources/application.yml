@@ -22,7 +22,7 @@ spring:
   mvc:
     static-path-pattern: /image/**
   resources:
-    static-locations: file:d:\\onlinestorepic\
+    static-locations: file:d:\\BMSPic\
   servlet:
     multipart:
       max-file-size: 100MB

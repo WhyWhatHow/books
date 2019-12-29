@@ -3,6 +3,20 @@ package io.github.whywhathow.books.vo;
 
 import io.github.whywhathow.books.pojo.Category;
 
+/**
+ * @param ： category ： 书籍分类，只需要提供分类号
+ *          example：
+ *          {
+ *          "category":
+ *          { "cid":1
+ *          },
+ *          "start":1,
+ *          "rows":10
+ *          }
+ * @Author whywhathow
+ * @param: start : 开始的页数, 默认 1
+ * @param： rows ：改页面含有的内容的数量 ，默认 10
+ **/
 public class CategoryVo {
     private Category category;
     private Integer start = 1;

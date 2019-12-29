@@ -5,6 +5,9 @@ public class RelationKey {
 
     private String bid;
 
+    public RelationKey() {
+    }
+
     public RelationKey(String uid, String bid) {
         this.uid = uid;
         this.bid = bid;

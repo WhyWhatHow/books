@@ -6,6 +6,9 @@ import io.github.whywhathow.books.pojo.BookExample;
 import java.util.Date;
 import java.util.List;
 
+import io.github.whywhathow.books.vo.BookHotVo;
+import io.github.whywhathow.books.vo.CategoryCountVo;
+import io.github.whywhathow.books.vo.UserCategoryVo;
 import org.apache.ibatis.annotations.*;
 import org.springframework.stereotype.Repository;
 
@@ -61,9 +64,9 @@ public interface BookMapper {
     @Select("select * from book where bname like concat('%',#{panme},'%') or  author like concat('%',#{panme},'%')  or publish like concat('%',#{panme},'%')")
     List<Book> selectByLike(String name);
 
-    // TODO 批量修改资产状态出错!!!!
-    @Update("update  book set state = #{state} ,update_time =  #{date} where bid = #{bid}")
-    int updateByPidToChangeState(String bid, Integer state, Date date);
+//    // TODO 批量修改资产状态出错!!!!
+//    @Update("update  book set state = #{state} ,update_time =  #{date} where bid = #{bid}")
+//    int updateByPidToChangeState(String bid, Integer state, Date date);
 
 
     //    @Select("select * from book where name like concat('%',#{name},'%')  ")
@@ -72,7 +75,7 @@ public interface BookMapper {
     //    @Select("select * from book ")
     long selectToListCount(Book book);
 
-    //    @Select(" ")
+    @Select(" select * from book order by borrow desc  limit 5")
     List<Book> selectToSideShow();
 
 
@@ -91,4 +94,28 @@ public interface BookMapper {
     @Update("update book set current = current+1  where bid = #{bid}")
     int updateCurrentNumByBid(String vid);
 
+    @Select("\n" +
+            "SELECT c.cid,cname, COUNT(1) num FROM category c, book b WHERE c.`cid` = b.`cid`  GROUP BY c.`cid`;\n")
+    List<CategoryCountVo> selectCategoryCount();
+
+    @Select("SELECT c.cname, c.cid ,COUNT(1) num FROM category c, book b ,relation r \n" +
+            "WHERE r.uid = #{uid} AND r.bid = b.bid AND b.`cid` =c.`cid`  \n" +
+            "GROUP BY c.`cid`;  \n")
+    List<CategoryCountVo> selectUserPieByUid(String uid);
+
+    @Select(
+            "\n" +
+                    "SELECT bname,r.bid,COUNT(1) num  \n" +
+                    "FROM relation r, book b \n" +
+                    "WHERE r.`bid` = b.`bid`" +
+                    " GROUP BY r.bid\n" +
+                    "ORDER BY num  DESC LIMIT 10;\n"
+    )
+    List<BookHotVo> selectHotBook();
+
+    @Select("select b.* from book b , relation r where r.uid =#{uid} and r.bid = b.bid and b.cid = #{cid}")
+    List<Book> selectCategoryInUser(String uid, Integer cid);
+
+    @Update("update book  set state = #{state},update_time = #{date} where bid =#{bid}  ")
+    int updateByPidToChangeState(String bid, Integer state, Date date);
 }

@@ -10,7 +10,7 @@ import java.util.List;
 
 public interface  MenuService {
     // 根据rid 返回 permission 集合
-    List<Menu> getMenuByRole(Role role);
+    List<Menu> getMenuByRole(int rid);
 
     int insertMenu(Menu menu);
 }

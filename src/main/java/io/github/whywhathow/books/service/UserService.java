@@ -1,7 +1,7 @@
 package io.github.whywhathow.books.service;
 
 
-import io.github.whywhathow.books.controller.BorrowVo;
+import io.github.whywhathow.books.vo.BorrowVo;
 import io.github.whywhathow.books.pojo.User;
 import io.github.whywhathow.books.utils.Result;
 
@@ -28,4 +28,8 @@ public interface UserService {
     Result returnBook(BorrowVo vo);
 
     Result payOwe(String uid);
+
+    Result getUserBorrowHistoryByUid(String uid);
+
+    Result getUserBorrowNowByUid(String uid);
 }

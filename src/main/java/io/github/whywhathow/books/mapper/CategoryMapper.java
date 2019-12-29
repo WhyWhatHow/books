@@ -2,6 +2,8 @@ package io.github.whywhathow.books.mapper;
 
 import io.github.whywhathow.books.pojo.Category;
 import io.github.whywhathow.books.pojo.CategoryExample;
+
+import java.util.Date;
 import java.util.List;
 
 import org.apache.ibatis.annotations.Mapper;
@@ -38,7 +40,13 @@ public interface CategoryMapper {
     @Select("select * from category  where is_deleted = false ")
     List<Category> selectAll();
 
-    @Update("update  category set is_deleted = true where cid =#{cid}")
+    @Update("update  category set is_deleted = true where cid =#{cid} or parentId = #{cid}")
     int updateTodelete(Integer cid);
 
+    long selectToListCount(Category category);
+
+    List<Category> selectToList(Category category);
+
+    @Update("update category  set is_deleted = #{state},update_time = #{date} where cid =#{cid} ")
+    int updateByPidToChangeState(Integer cid, boolean state, Date date);
 }

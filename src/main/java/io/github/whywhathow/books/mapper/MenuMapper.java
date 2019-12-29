@@ -37,5 +37,5 @@ public interface MenuMapper {
 
 
     @Select("select * from menu ,role_menu rm  where rid = #{rid} and rm.mid = menu.id")
-    List<Menu> selectByRole(Role role);
+    List<Menu> selectByRole(int rid);
 }

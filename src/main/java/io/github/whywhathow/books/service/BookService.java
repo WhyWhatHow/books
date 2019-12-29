@@ -4,6 +4,7 @@ import io.github.whywhathow.books.pojo.Book;
 import io.github.whywhathow.books.utils.Result;
 import io.github.whywhathow.books.vo.BookVo;
 import io.github.whywhathow.books.vo.CategoryVo;
+import io.github.whywhathow.books.vo.UserCategoryVo;
 
 import javax.servlet.http.HttpServletRequest;
 import java.util.List;
@@ -40,4 +41,16 @@ public interface BookService {
     Result selectByCidStateAndUid(String cname, String uid, Integer state);
 
     Result selectByBook(Book book);
+
+    Result selectCategoryCount();
+
+    Result selectUserPieByUser(String uid);
+
+    Result getHotBook();
+
+    Result getCategoryBook(Integer cid);
+
+    Result getCategoryBookInUser(UserCategoryVo vo);
+
+    Result getSideShow();
 }

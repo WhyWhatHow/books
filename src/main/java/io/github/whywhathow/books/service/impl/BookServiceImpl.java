@@ -7,10 +7,12 @@ import io.github.whywhathow.books.pojo.Book;
 import io.github.whywhathow.books.service.BookService;
 import io.github.whywhathow.books.utils.MD5Util;
 import io.github.whywhathow.books.utils.Result;
-import io.github.whywhathow.books.vo.BookVo;
-import io.github.whywhathow.books.vo.CategoryVo;
+import io.github.whywhathow.books.vo.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.test.annotation.Rollback;
+import org.springframework.transaction.annotation.Transactional;
+import org.springframework.transaction.interceptor.TransactionAspectSupport;
 import org.springframework.util.StringUtils;
 
 import javax.servlet.http.HttpServletRequest;
@@ -18,6 +20,7 @@ import java.util.Date;
 import java.util.List;
 
 @Service
+
 public class BookServiceImpl implements BookService {
     @Autowired
     BookMapper mapper;
@@ -65,7 +68,7 @@ public class BookServiceImpl implements BookService {
         } catch (Exception e) {
             result.setCode(500);
             e.printStackTrace();
-            result.setMessage("Server's problem,  --");
+            result.setMessage("Server's problem,  -- add book ");
             return result;
         }
         result.setSuccess(true);
@@ -204,13 +207,49 @@ public class BookServiceImpl implements BookService {
 
 
     @Override
+    @Transactional(rollbackFor = Exception.class)
     public Result changeListByBidAndState(List<String> list, Integer state) {
-        return null;
+        Result result = new Result();
+        result.setSuccess(false);
+        int res = 0;
+        try {
+            Date date = new Date();
+            for (String pid : list) {
+                res += mapper.updateByPidToChangeState(pid, state, date);
+            }
+        } catch (Exception e) {
+            result.setCode(500);
+            result.setMessage("Server's problem,  --");
+            TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();//
+            return result;
+        }
+        result.setData(res);
+        result.setSuccess(true);
+        result.setCode(202);
+        result.setMessage("Success in update product list to change state ");
+        return result;
+
     }
 
     @Override
     public Result selectTolist(BookVo vo) {
-        return null;
+        Result result = new Result();
+        result.setSuccess(false);
+        PageInfo<Book> info = null;
+        try {
+            PageHelper.startPage(vo.getStart(), vo.getRows());
+            info = PageInfo.of(mapper.selectToList(vo.getBook()));
+            info.setTotal(mapper.selectToListCount(vo.getBook()));
+        } catch (Exception e) {
+            result.setCode(500);
+            result.setMessage("Server's problem,  -- page  like search");
+            return result;
+        }
+        result.setSuccess(true);
+        result.setCode(202);
+        result.setData(info);
+        result.setMessage("Success in get product list background ");
+        return result;
     }
 
     @Override
@@ -259,5 +298,130 @@ public class BookServiceImpl implements BookService {
     @Override
     public Result selectByBook(Book book) {
         return null;
+    }
+
+    @Override
+    public Result selectCategoryCount() {
+        Result result = new Result();
+        result.setSuccess(false);
+        List list = null;
+        try {
+            list = mapper.selectCategoryCount();
+        } catch (Exception e) {
+            result.setCode(500);
+            result.setMessage("Server's problem,  -- get category count pie ");
+            return result;
+        }
+        result.setSuccess(true);
+        result.setCode(202);
+        result.setData(list);
+        result.setMessage("success in category count pie");
+        return result;
+    }
+
+    @Override//查询用户所有的借书信息
+    public Result selectUserPieByUser(String uid) {
+        Result result = new Result();
+        result.setSuccess(false);
+        List list = null;
+        try {
+            list = mapper.selectUserPieByUid(uid);
+
+        } catch (Exception e) {
+            result.setCode(500);
+            result.setMessage("Server's problem,  --");
+            return result;
+        }
+        if (list.size() == 0) {
+            result.setMessage("this user is a bad boy, never borrows a book. ");
+        } else {
+            result.setMessage("success in get user's borrow category count list");
+        }
+        result.setSuccess(true);
+        result.setCode(202);
+        result.setData(list);
+        return result;
+    }
+
+    @Override
+    public Result getHotBook() {
+        Result result = new Result();
+        result.setSuccess(false);
+
+        List<BookHotVo> list = null;
+        try {
+            list = mapper.selectHotBook();
+        } catch (Exception e) {
+            result.setCode(500);
+            result.setMessage("Server's problem,  -- get hot book ");
+            return result;
+        }
+        result.setData(list);
+        result.setSuccess(true);
+        result.setCode(202);
+        result.setMessage("success in get hot book ");
+        return result;
+    }
+
+    @Override
+    public Result getCategoryBook(Integer cid) {
+        Result result = new Result();
+        result.setSuccess(false);
+        List list = null;
+        try {
+            list = mapper.selectByCategory(cid);
+        } catch (Exception e) {
+            result.setCode(500);
+            result.setMessage("Server's problem,  -- get category book");
+            return result;
+        }
+        result.setSuccess(true);
+        result.setCode(202);
+        result.setMessage("get category book success");
+        result.setData(list);
+        return result;
+
+    }
+
+    @Override
+    public Result getCategoryBookInUser(UserCategoryVo vo) {
+        Result result = new Result();
+        result.setSuccess(false);
+        List list = null;
+        try {
+            list = mapper.selectCategoryInUser(vo.getUid(), vo.getCid());
+        } catch (Exception e) {
+            result.setCode(500);
+            result.setMessage("Server's problem,  --");
+            return result;
+        }
+
+        result.setSuccess(true);
+        result.setCode(202);
+        result.setMessage("succcess in get user borrow books in category");
+        result.setData(list);
+        return result;
+
+
+    }
+
+    @Override
+    public Result getSideShow() {
+        Result result = new Result();
+        result.setSuccess(false);
+        List list = null;
+        try {
+            list = mapper.selectToSideShow();
+        } catch (Exception e) {
+            result.setCode(500);
+            result.setMessage("Server's problem,  --get book side show");
+            return result;
+        }
+        result.setSuccess(true);
+        result.setCode(202);
+        result.setData(list);
+        result.setMessage("success in get book side show ");
+        return result;
+
     }
 }

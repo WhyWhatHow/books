@@ -1,4 +1,4 @@
-package io.github.whywhathow.books.controller;
+package io.github.whywhathow.books.vo;
 
 import io.github.whywhathow.books.pojo.Book;
 import io.github.whywhathow.books.pojo.User;

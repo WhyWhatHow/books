@@ -1,9 +1,8 @@
 package io.github.whywhathow.books.pojo;
 
-import io.github.whywhathow.books.controller.BorrowVo;
+import io.github.whywhathow.books.vo.BorrowVo;
 import io.github.whywhathow.books.utils.TimeUtils;
 
-import javax.xml.crypto.Data;
 import java.util.Date;
 
 public class Relation extends RelationKey {

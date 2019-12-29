@@ -35,6 +35,15 @@ public interface RelationMapper {
 
     int updateByPrimaryKey(Relation record);
 
-    @Select("select * from relation where uid =#{uid} and real_return is NULL ")
+    @Select("select * from relation where uid=#{uid} and real_return is NULL")
+    /***
+     * @Author whywhathow
+     * 获取用户的当前借阅的图书
+     * @Param [uid]
+     * @return java.util.List<io.github.whywhathow.books.pojo.Relation>
+     **/
     List<Relation> selectByUid(String uid);
+
+    @Select("select * from relation where uid = #{uid} and bid =#{bid} and real_return is NULL")
+    int selectByUidAndBid(String uid, String bid);// 当前用户在借阅期内有借阅本书，不用归还
 }

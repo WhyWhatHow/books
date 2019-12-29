@@ -16,6 +16,7 @@
         <result column="current" property="current" jdbcType="INTEGER"/>
         <result column="create_time" property="createTime" jdbcType="TIMESTAMP"/>
         <result column="update_time" property="updateTime" jdbcType="TIMESTAMP"/>
+        <result column="image_url" property="imageUrl" jdbcType="VARCHAR"/>
     </resultMap>
     <sql id="Example_Where_Clause">
         <where>
@@ -78,8 +79,8 @@
         </where>
     </sql>
     <sql id="Base_Column_List">
-    bid, bname, author, publish, isbn, price, info, cid, borrow, total, state, current,
-    create_time, update_time
+    bid, bname, author, publish, isbn, price, info, cid, borrow, total, state, current, 
+    create_time, update_time, image_url
   </sql>
     <select id="selectByExample" resultMap="BaseResultMap" parameterType="io.github.whywhathow.books.pojo.BookExample">
         select
@@ -112,16 +113,18 @@
         </if>
     </delete>
     <insert id="insert" parameterType="io.github.whywhathow.books.pojo.Book">
-    insert into book (bid, bname, author,
-      publish, isbn, price,
-      info, cid, borrow,
-      total, state, current,
-      create_time, update_time)
-    values (#{bid,jdbcType=VARCHAR}, #{bname,jdbcType=VARCHAR}, #{author,jdbcType=VARCHAR},
-      #{publish,jdbcType=VARCHAR}, #{isbn,jdbcType=VARCHAR}, #{price,jdbcType=DECIMAL},
-      #{info,jdbcType=VARCHAR}, #{cid,jdbcType=INTEGER}, #{borrow,jdbcType=INTEGER},
-      #{total,jdbcType=INTEGER}, #{state,jdbcType=INTEGER}, #{current,jdbcType=INTEGER},
-      #{createTime,jdbcType=TIMESTAMP}, #{updateTime,jdbcType=TIMESTAMP})
+    insert into book (bid, bname, author, 
+      publish, isbn, price, 
+      info, cid, borrow, 
+      total, state, current, 
+      create_time, update_time, image_url
+      )
+    values (#{bid,jdbcType=VARCHAR}, #{bname,jdbcType=VARCHAR}, #{author,jdbcType=VARCHAR}, 
+      #{publish,jdbcType=VARCHAR}, #{isbn,jdbcType=VARCHAR}, #{price,jdbcType=DECIMAL}, 
+      #{info,jdbcType=VARCHAR}, #{cid,jdbcType=INTEGER}, #{borrow,jdbcType=INTEGER}, 
+      #{total,jdbcType=INTEGER}, #{state,jdbcType=INTEGER}, #{current,jdbcType=INTEGER}, 
+      #{createTime,jdbcType=TIMESTAMP}, #{updateTime,jdbcType=TIMESTAMP}, #{imageUrl,jdbcType=VARCHAR}
+      )
   </insert>
     <insert id="insertSelective" parameterType="io.github.whywhathow.books.pojo.Book">
         insert into book
@@ -168,6 +171,9 @@
             <if test="updateTime != null">
                 update_time,
             </if>
+            <if test="imageUrl != null">
+                image_url,
+            </if>
         </trim>
         <trim prefix="values (" suffix=")" suffixOverrides=",">
             <if test="bid != null">
@@ -211,6 +217,9 @@
             </if>
             <if test="updateTime != null">
                 #{updateTime,jdbcType=TIMESTAMP},
+            </if>
+            <if test="imageUrl != null">
+                #{imageUrl,jdbcType=VARCHAR},
             </if>
         </trim>
     </insert>
@@ -266,6 +275,9 @@
             <if test="record.updateTime != null">
                 update_time = #{record.updateTime,jdbcType=TIMESTAMP},
             </if>
+            <if test="record.imageUrl != null">
+                image_url = #{record.imageUrl,jdbcType=VARCHAR},
+            </if>
         </set>
         <if test="_parameter != null">
             <include refid="Update_By_Example_Where_Clause"/>
@@ -286,7 +298,8 @@
         state = #{record.state,jdbcType=INTEGER},
         current = #{record.current,jdbcType=INTEGER},
         create_time = #{record.createTime,jdbcType=TIMESTAMP},
-        update_time = #{record.updateTime,jdbcType=TIMESTAMP}
+        update_time = #{record.updateTime,jdbcType=TIMESTAMP},
+        image_url = #{record.imageUrl,jdbcType=VARCHAR}
         <if test="_parameter != null">
             <include refid="Update_By_Example_Where_Clause"/>
         </if>
@@ -333,6 +346,9 @@
             <if test="updateTime != null">
                 update_time = #{updateTime,jdbcType=TIMESTAMP},
             </if>
+            <if test="imageUrl != null">
+                image_url = #{imageUrl,jdbcType=VARCHAR},
+            </if>
         </set>
         where bid = #{bid,jdbcType=VARCHAR}
     </update>
@@ -350,7 +366,45 @@
       state = #{state,jdbcType=INTEGER},
       current = #{current,jdbcType=INTEGER},
       create_time = #{createTime,jdbcType=TIMESTAMP},
-      update_time = #{updateTime,jdbcType=TIMESTAMP}
+      update_time = #{updateTime,jdbcType=TIMESTAMP},
+      image_url = #{imageUrl,jdbcType=VARCHAR}
     where bid = #{bid,jdbcType=VARCHAR}
   </update>
+
+    <!--   自己的方法-->
+    <select id="selectToList" parameterType="book" resultMap="BaseResultMap">
+        select * from book
+        <where>
+            <if test="bname !=null and bname != '' ">
+                and bname like concat('%',#{bname},'%')
+            </if>
+            <if test="bid != null and bid !='' ">
+                and bid = #{bid}
+            </if>
+            <if test="state != null  ">
+                and state = #{state}
+            </if>
+            <if test="cid !=null">
+                and cid =#{cid}
+            </if>
+        </where>
+    </select>
+    <select id="selectToListCount" parameterType="book" resultType="Long">
+        select count(bid) from book
+        <where>
+            <if test="bname !=null and bname != '' ">
+                and bname like concat('%',#{bname},'%')
+            </if>
+            <if test="bid != null and bid !='' ">
+                and bid = #{bid}
+            </if>
+            <if test="state != null  ">
+                and state = #{state}
+            </if>
+            <if test="cid !=null">
+                and cid =#{cid}
+            </if>
+        </where>
+    </select>
+
 </mapper>

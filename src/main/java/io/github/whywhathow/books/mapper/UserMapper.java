@@ -5,6 +5,8 @@ import io.github.whywhathow.books.pojo.User;
 import io.github.whywhathow.books.pojo.UserExample;
 import java.util.List;
 
+import io.github.whywhathow.books.vo.HistoryVo;
+import io.github.whywhathow.books.vo.NowVo;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 import org.apache.ibatis.annotations.Select;
@@ -48,4 +50,17 @@ public interface UserMapper {
     @Update("update user set owe =0, state = 1 where uid = #{uid}")
     int updateUserOweToNormal(String uid);
 
+    @Select(
+            "SELECT b.*, r.`borrow_time`, r.`real_return`,r.`need_return` \n"
+                    + "FROM relation r,book b \n"
+                    + "WHERE r.`uid` =#{uid} AND r.`bid` = b.`bid` AND r.`real_return` IS NOT NULL ")
+    List<HistoryVo> getBorrorwHistory(String uid);
+
+    List<Book> borrowHistoryAll();
+
+    @Select(
+            "SELECT b.*, r.`borrow_time`, r.`real_return`,r.`need_return` \n"
+                    + "FROM relation r,book b \n"
+                    + "WHERE r.`uid` =#{uid} AND r.`bid` = b.`bid` AND r.`real_return` IS NULL ")
+    List<NowVo> getBorrowNow(String uid);
 }
